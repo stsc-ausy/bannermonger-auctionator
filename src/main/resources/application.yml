@@ -1,0 +1,57 @@
+bannermonger:
+  auctionator:
+    bannerQuoteRequestOut: queue/banner-quote-request-out
+    bannerOfferIn: queue/banner-offer-in
+    bannerOrderOut: queue/banner-order-out
+    offerProcessing:
+      initialDelay: PT5S
+      fixedDelay: PT5S
+
+spring:
+  jersey:
+    application-path: /api
+  jms:
+    listener:
+      concurrency: 3
+      max-concurrency: 5
+  artemis:
+    embedded:
+      enabled: true
+  sql:
+    init:
+      platform: h2
+      mode: always
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    generate-ddl: false
+    database: h2
+  jta:
+    transaction-manager-id: FXSServer1
+    atomikos:
+      properties:
+        default-jta-timeout: 30000
+        max-timeout: 60000
+        log-base-dir: txstore/atomikos
+        enable-logging: false
+      connectionfactory:
+        min-pool-size: 10
+        max-pool-size: 20
+        # please do not modify the following values, essential for proper scheduling functionality
+        ignore-session-transacted-flag: true
+        local-transaction-mode: false
+        xa-connection-factory-class-name: org.apache.activemq.artemis.jms.client.ActiveMQXAConnectionFactory
+      datasource:
+        min-pool-size: 10
+        max-pool-size: 20
+        xa-data-source-class-name: org.h2.jdbcx.JdbcDataSource
+        test-query: SELECT 1 FROM DUAL
+server:
+  shutdown: graceful
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: /management
